@@ -1,7 +1,10 @@
 # dropbox-apiv2
-Javascript implementation of Dropbox APIv2 using Dropbox REST api
+Javascript implementation of Dropbox APIv2 using Dropbox REST api.
 
-This implementation follows the API documentation found at: https://www.dropbox.com/developers/documentation/http/documentation
+This implementation directly follows the official Dropbox API documentation found at: https://www.dropbox.com/developers/documentation/http/documentation. <br />
+It is simply a wrapper around XMLHttpRequest that adjusts the request and response handling to account for variances in the Dropbox API (like different API endpoint URLs, expected requeset headers, etc.) and exposes a consistent javascript API to make the requests.
+
+**Though the entire Dropbox API is accessible, only a subset has been exercised through this tool. Please report any bugs and I will do what I can to resolve them quickly.**
 
 ## Usage
 ```
@@ -9,9 +12,15 @@ dropbox(apiFunction, apiArguments, handlers);
 
 // ex:
 dropbox('files/list_folder', {path: '/some/path'}, function(result){ console.log(result.entries); });
+// or
+dropbox('files/list_folder', {path: '/some/path'}, {
+  onComplete: function(result){ console.log(result.entries); },
+  onDownloadProgress: function(result){ console.log(result.entries); }
+);
+
 ```
 
-The values for `apiFunction` are exactly as documented in the official Dropbox API documentation. Likewise, the `apiArguments` accepted are the same as documented on that page. These are really all just passed through to the XMLHttpRequest sent to Dropbox, but in a way that adjusts the request and response handling to account for variances in the Dropbox API (like different API endpoint urls, expected request headers, etc.)
+The values for `apiFunction` are exactly as documented in the official Dropbox API documentation. Likewise, the `apiArguments` accepted are the same as documented on that page. 
 
 `handlers` can either be a single function (assumed to be `onComplete` equivalent), or an object of functions. Currently suppoorted: `onComplete`, `onDownloadProgress` and `onUploadProgress`(for browsers which support it)
 
