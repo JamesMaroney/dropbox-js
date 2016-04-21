@@ -1,4 +1,16 @@
-+function(ctx){
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD
+        define(factory);
+    } else if (typeof exports === 'object') {
+        // Node, CommonJS-like
+        module.exports = factory();
+    } else {
+        // Browser globals (root is window)
+        root.dropbox = factory();
+    }
+}(this, function () {
+
   function isFunction(x, type){ return ({}).toString.call(x) == '[object Function]'; }
   function isString(x, type){ return ({}).toString.call(x) == '[object String]'; }
   function isObject(x, type){ return ({}).toString.call(x) == '[object Object]'; }
@@ -12,7 +24,7 @@
       tokenStore = function(key, val){ return ( arguments.length > 1 ) ? (localStorage[key] = val) : localStorage[key]; };
 
   var endpointMapping = {
-    'auth/token/revoke': { contentType: null }
+    'auth/token/revoke': { contentType: null },
     'files/upload': { baseUri: content, format: 'content-upload' },
     'files/get_thumbnail': { baseUri: content, format: 'content-download' },
     'files/download' : { baseUri: content, format: 'content-download' },
@@ -28,7 +40,7 @@
     'content-upload' : 'application/octet-stream'
   }
 
-  var dropbox = ctx.dropbox = function(endpoint, apiArgs){
+  var dropbox = function(endpoint, apiArgs){
     var args = [].slice.call(arguments);
 
     var config = endpointMapping[endpoint] || {};
@@ -112,4 +124,6 @@
                         + "state="+ encodeURIComponent(csrfToken);
     }
   }
-}(window);
+
+  return dropbox;
+}));
