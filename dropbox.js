@@ -156,7 +156,7 @@
                         + "state="+ encodeURIComponent(csrfToken);
     }
 
-    return proimse;
+    return promise;
   }
 
   return dropbox;
