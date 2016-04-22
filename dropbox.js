@@ -62,7 +62,7 @@
     var r = new XMLHttpRequest();
 
     r.open('POST', config.baseUri+endpoint, true);
-    r.setRequestHeader('Authorization', 'Bearer '+ tokenStore('__dbat') );
+    r.setRequestHeader('Authorization', 'Bearer '+ (tokenStore('__dbat') || '000000000000000000000000_00000-000000000000000000000000000000000') );
 
     if(config.format == 'content-download') r.responseType = 'blob';
     if(apiArgs && apiArgs.responseType){
