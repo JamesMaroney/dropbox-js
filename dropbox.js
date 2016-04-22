@@ -70,12 +70,17 @@
 
     if(handlers.onDownloadProgress) r.addEventListener("progress", handlers.onDownloadProgress);
     if(handlers.onUploadProgress && r.upload) r.upload.addEventListener("progress", handlers.onUploadProgress);
+    if(handlers.onError) r.addEventListener("error", function(e){handlers.onError(e.target)});
 
     r.onreadystatechange = function () {
-      if (r.readyState != 4 || r.status != 200) return;
-      var apiResponse = JSON.parse( r.getResponseHeader('dropbox-api-result') || r.responseText );
-      if(endpoint=='auth/token/revoke') tokenStore('__dbat', '');
-      handlers.onComplete && handlers.onComplete( apiResponse, r.response, r);
+      if (r.readyState != 4 ) return;
+      if (r.status == 200) {
+        var apiResponse = JSON.parse( r.getResponseHeader('dropbox-api-result') || r.responseText );
+        if(endpoint=='auth/token/revoke') tokenStore('__dbat', '');
+        handlers.onComplete && handlers.onComplete( apiResponse, r.response, r);
+      } else {
+        handlers.onError && handlers.onError(r);
+      }
     };
 
     var requestPayload = (args.length > 2 && config.format == 'content-upload') ? args[2] : undefined;
