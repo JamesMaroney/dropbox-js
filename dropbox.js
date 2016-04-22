@@ -46,9 +46,9 @@
     var args = [].slice.call(arguments);
 
     var config = endpointMapping[endpoint] || {};
-    config.baseUri = config.baseUri || api;
-    config.format = config.format || 'rpc';
-    config.contentType = config.contentType || (config.contentType === null) ? null : contentTypeMapping[config.format];
+    baseUri = config.baseUri || api;
+    format = config.format || 'rpc';
+    contentType = config.contentType || (config.contentType === null) ? null : contentTypeMapping[format];
 
     var lastArg = args[args.length - 1];
     var handlers = (args.length > 2 && (isObject(lastArg) || isFunction(lastArg))) ? lastArg : {};
@@ -61,17 +61,17 @@
 
     var r = new XMLHttpRequest();
 
-    r.open('POST', config.baseUri+endpoint, true);
+    r.open('POST', baseUri+endpoint, true);
     r.setRequestHeader('Authorization', 'Bearer '+ (tokenStore('__dbat') || '000000000000000000000000_00000-000000000000000000000000000000000') );
 
-    if(config.format == 'content-download') r.responseType = 'blob';
+    if(format == 'content-download') r.responseType = 'blob';
     if(apiArgs && apiArgs.responseType){
       r.responseType = apiArgs.responseType;
       delete apiArgs.responseType;
     }
 
-    if(config.contentType) r.setRequestHeader('Content-Type', config.contentType);
-    if(apiArgs && (config.format == 'content-upload' || config.format == 'content-download'))
+    if(contentType) r.setRequestHeader('Content-Type', contentType);
+    if(apiArgs && (format == 'content-upload' || format == 'content-download'))
       r.setRequestHeader('Dropbox-API-Arg', JSON.stringify(apiArgs));
 
     if(handlers.onDownloadProgress) r.addEventListener("progress", handlers.onDownloadProgress);
@@ -96,8 +96,8 @@
       }
     };
 
-    var requestPayload = (args.length > 2 && config.format == 'content-upload') ? args[2] : undefined;
-    requestPayload = requestPayload || ( (apiArgs && config.format == 'rpc') ? JSON.stringify(apiArgs) : null );
+    var requestPayload = (args.length > 2 && format == 'content-upload') ? args[2] : undefined;
+    requestPayload = requestPayload || ( (apiArgs && format == 'rpc') ? JSON.stringify(apiArgs) : null );
     if(requestPayload){
       r.send(requestPayload);
     } else {
