@@ -27,6 +27,8 @@ The values for `apiFunction` are exactly as documented in the official Dropbox A
 `onError` recieves a reference to the XMLHttpRequest object.<br />
 `onDownloadProgress` and `onUploadProgress` are directly attached to the XMLHttpRequest object. see: https://developer.mozilla.org/en-US/docs/Web/Events/progress
 
+Returns a Promise if supported by the runtime environment, otherwise `undefined`. See **Promises** below.
+
 ## Authentication
 ```
 dropbox.authenticate('client_id', handlers);
@@ -39,6 +41,8 @@ Currently, only `token` authentication is supported by this library. The authent
 `handlers` can either be a single function (assumed to be `onComplete` equivalent), or an object of functions. Currently suppoorted: `onComplete`, `onError`.<br />
 `onComplete` receives no parameters.<br />
 `onError` receives an object with the deserialized URL hash params which should include `error` and `error_description` from Dropbox.
+
+Returns a Promise if supported by the runtime environment, otherwise `undefined`. See **Promises** below.
 
 ## Global Error Handling
 Rather than handling errors at every API call, you can register a global error handler.
@@ -64,3 +68,8 @@ var localStorageTokenStore = function(key,val){
 }
 dropbox.setTokenStore( localStorageTokenStore );
 ```
+
+## Promises
+If `Promise` is defined globally, calls to `dropbox()` and `authenticate()` will return a new Promise which will be resolved & rejected following the same rules as `onComplete` and `onError` handlers above. The only difference is that the global Error handler (if any) cannot receive return values from Error handlers attached via the returned Promise.
+
+You can use https://github.com/stefanpenner/es6-promise as a polyfill for environments which don't support ES6 Promises: http://caniuse.com/#search=Promise
