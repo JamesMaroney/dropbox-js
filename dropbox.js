@@ -11,9 +11,10 @@
     }
 }(this, function () {
 
-  function isFunction(x, type){ return ({}).toString.call(x) == '[object Function]'; }
-  function isString(x, type){ return ({}).toString.call(x) == '[object String]'; }
-  function isObject(x, type){ return ({}).toString.call(x) == '[object Object]'; }
+  var toString = ({}).toString;
+  function isFunction(x, type){ return toString.call(x) == '[object Function]'; }
+  function isString(x, type){ return toString.call(x) == '[object String]'; }
+  function isObject(x, type){ return toString.call(x) == '[object Object]'; }
   function paramsFromUrlHash(){
     return window.location.hash.replace(/^#/,'').split('&').reduce(function(o,entry){ if(entry=='') return o; entry=entry.split('='); o[decodeURIComponent(entry[0])] = decodeURIComponent(entry[1]); return o;},{});
   }
