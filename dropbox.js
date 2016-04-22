@@ -21,7 +21,8 @@
 
   var api = 'https://api.dropboxapi.com/2/',
       content = 'https://content.dropboxapi.com/2/';
-      tokenStore = function(key, val){ return ( arguments.length > 1 ) ? (localStorage[key] = val) : localStorage[key]; };
+      tokenStore = function(key, val){ return ( arguments.length > 1 ) ? (localStorage[key] = val) : localStorage[key]; },
+      globalErrorHandler = undefined;
 
   var endpointMapping = {
     'auth/token/revoke': { contentType: null },
@@ -70,7 +71,10 @@
 
     if(handlers.onDownloadProgress) r.addEventListener("progress", handlers.onDownloadProgress);
     if(handlers.onUploadProgress && r.upload) r.upload.addEventListener("progress", handlers.onUploadProgress);
-    if(handlers.onError) r.addEventListener("error", function(e){handlers.onError(e.target)});
+    if(handlers.onError || globalErrorHandler) r.addEventListener("error", function(e){
+      handlers.onError && handlers.onError(e.target);
+      globalErrorHandler && globalErrorHandler(e.target);
+    });
 
     r.onreadystatechange = function () {
       if (r.readyState != 4 ) return;
@@ -80,6 +84,7 @@
         handlers.onComplete && handlers.onComplete( apiResponse, r.response, r);
       } else {
         handlers.onError && handlers.onError(r);
+        globalErrorHandler && globalErrorHandler(r);
       }
     };
 
@@ -93,6 +98,7 @@
   }
 
 
+  dropbox.setGlobalErrorHandler = function(handler){ globalErrorHandler = handler; }
   dropbox.setTokenStore = function(store){ tokenStore = store; },
   dropbox.authenticate = function(apiArgs, handlers){
     handlers = handlers || {};
@@ -117,6 +123,7 @@
       } else {
         // the authentication was not successful
         handlers.onError && handlers.onError(params);
+        globalErrorHandler && globalErrorHandler(params);
       }
     } else {
       // initiate authentication
