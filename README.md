@@ -1,5 +1,5 @@
 # dropbox-js
-Javascript implementation of Dropbox APIv2 using Dropbox REST api.
+Javascript implementation of Dropbox APIv2 using Dropbox HTTP API.
 
 This implementation directly follows the official Dropbox API documentation found at: https://www.dropbox.com/developers/documentation/http/documentation. <br />
 It is simply a wrapper around XMLHttpRequest that adjusts the request and response handling to account for variances in the Dropbox API (like different API endpoint URLs, expected requeset headers, etc.) and exposes a consistent javascript API to make the requests.
