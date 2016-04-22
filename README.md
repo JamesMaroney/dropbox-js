@@ -20,7 +20,7 @@ dropbox('files/list_folder', {path: '/some/path'}, {
 
 ```
 
-The values for `apiFunction` are exactly as documented in the official Dropbox API documentation. Likewise, the `apiArguments` accepted are the same as documented on that page. 
+The values for `apiFunction` and `apiArguments` are exactly as documented in the official Dropbox API documentation. 
 
 `handlers` can either be a single function (assumed to be `onComplete` equivalent), or an object of functions. Currently supported: `onComplete`, `onError`, `onDownloadProgress` and `onUploadProgress`(for browsers which support it)<br />
 `onComplete` receives the JSON API response, the response payload, and a reference to the XMLHttpRequest object.<br />
