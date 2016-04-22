@@ -54,6 +54,10 @@
     var handlers = (args.length > 2 && (isObject(lastArg) || isFunction(lastArg))) ? lastArg : {};
     if(isFunction(handlers)) handlers = { onComplete: handlers };
 
+    var promise,promisectl = {};
+    if(Promise){
+      promise = new Promise(function(resolve,reject){ promisectl.resolve = resolve; promisectl.reject = reject });
+    }
 
     var r = new XMLHttpRequest();
 
@@ -74,6 +78,7 @@
     if(handlers.onUploadProgress && r.upload) r.upload.addEventListener("progress", handlers.onUploadProgress);
     if(handlers.onError || globalErrorHandler) r.addEventListener("error", function(e){
       var er = handlers.onError && handlers.onError(e.target);
+      promise && promisectl.reject && promisectl.reject(e.target);
       globalErrorHandler && globalErrorHandler(e.target, er);
     });
 
@@ -83,8 +88,10 @@
         var apiResponse = JSON.parse( r.getResponseHeader('dropbox-api-result') || r.responseText );
         if(endpoint=='auth/token/revoke') tokenStore('__dbat', '');
         handlers.onComplete && handlers.onComplete( apiResponse, r.response, r);
+        promise && promisectl.resolve && promisectl.resolve( apiResponse, r.response, r );
       } else {
         var er = handlers.onError && handlers.onError(r);
+        promise && promisectl.reject && promisectl.reject(r);
         globalErrorHandler && globalErrorHandler(r, er);
       }
     };
@@ -96,6 +103,8 @@
     } else {
       r.send();
     }
+
+    return promise;
   }
 
 
@@ -108,8 +117,17 @@
     if(isString(apiArgs)) apiArgs = { client_id: apiArgs };
     apiArgs.redirect_uri = apiArgs.redirect_uri || window.location.href;
 
+    var promise,promisectl = {};
+    if(Promise){
+      promise = new Promise(function(resolve,reject){ promisectl.resolve = resolve; promisectl.reject = reject });
+    }
+
     // if we already have an access token, return immediately
-    if( tokenStore('__dbat') ) return handlers.onComplete();
+    if( tokenStore('__dbat') ){
+      handlers.onComplete();
+      promise && promise.resolve && promise.resolve();
+      return promise
+    }
 
     var params = paramsFromUrlHash(),
         csrfToken = tokenStore('__dbcsrf');
@@ -124,6 +142,7 @@
       } else {
         // the authentication was not successful
         var er = handlers.onError && handlers.onError(params);
+        promise && promise.reject && promise.reject(params);
         globalErrorHandler && globalErrorHandler(params, er);
       }
     } else {
@@ -136,6 +155,8 @@
                         + "redirect_uri="+ encodeURIComponent(apiArgs.redirect_uri) + "&"
                         + "state="+ encodeURIComponent(csrfToken);
     }
+
+    return proimse;
   }
 
   return dropbox;
