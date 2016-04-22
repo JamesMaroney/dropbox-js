@@ -72,8 +72,8 @@
     if(handlers.onDownloadProgress) r.addEventListener("progress", handlers.onDownloadProgress);
     if(handlers.onUploadProgress && r.upload) r.upload.addEventListener("progress", handlers.onUploadProgress);
     if(handlers.onError || globalErrorHandler) r.addEventListener("error", function(e){
-      handlers.onError && handlers.onError(e.target);
-      globalErrorHandler && globalErrorHandler(e.target);
+      var er = handlers.onError && handlers.onError(e.target);
+      globalErrorHandler && globalErrorHandler(e.target, er);
     });
 
     r.onreadystatechange = function () {
@@ -83,8 +83,8 @@
         if(endpoint=='auth/token/revoke') tokenStore('__dbat', '');
         handlers.onComplete && handlers.onComplete( apiResponse, r.response, r);
       } else {
-        handlers.onError && handlers.onError(r);
-        globalErrorHandler && globalErrorHandler(r);
+        var er = handlers.onError && handlers.onError(r);
+        globalErrorHandler && globalErrorHandler(r, er);
       }
     };
 
@@ -122,8 +122,8 @@
         window.location.replace( window.location.href.replace(/#.*/,'') );
       } else {
         // the authentication was not successful
-        handlers.onError && handlers.onError(params);
-        globalErrorHandler && globalErrorHandler(params);
+        var er = handlers.onError && handlers.onError(params);
+        globalErrorHandler && globalErrorHandler(params, er);
       }
     } else {
       // initiate authentication
