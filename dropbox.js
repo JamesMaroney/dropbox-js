@@ -1,4 +1,5 @@
 (function (root, factory) {
+  'use strict';
     if (typeof define === 'function' && define.amd) {
         // AMD
         define(factory);
@@ -10,6 +11,7 @@
         root[root.__dropbox_export || 'dropbox'] = factory();
     }
 }(this, function () {
+  'use strict';
 
   var toString = ({}).toString;
   function isFunction(x, type){ return toString.call(x) == '[object Function]'; }
@@ -21,7 +23,7 @@
 
 
   var api = 'https://api.dropboxapi.com/2/',
-      content = 'https://content.dropboxapi.com/2/';
+      content = 'https://content.dropboxapi.com/2/',
       tokenStore = function(key, val){ return ( arguments.length > 1 ) ? (localStorage[key] = val) : localStorage[key]; },
       globalErrorHandler = undefined;
 
@@ -45,10 +47,10 @@
   var dropbox = function(endpoint, apiArgs){
     var args = [].slice.call(arguments);
 
-    var config = endpointMapping[endpoint] || {};
-    baseUri = config.baseUri || api;
-    format = config.format || 'rpc';
-    contentType = config.contentType || (config.contentType === null) ? null : contentTypeMapping[format];
+    var config = endpointMapping[endpoint] || {},
+        baseUri = config.baseUri || api,
+        format = config.format || 'rpc',
+        contentType = config.contentType || (config.contentType === null) ? null : contentTypeMapping[format];
 
     var lastArg = args[args.length - 1];
     var handlers = (args.length > 2 && (isObject(lastArg) || isFunction(lastArg))) ? lastArg : {};
