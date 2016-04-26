@@ -7,7 +7,7 @@
         module.exports = factory();
     } else {
         // Browser globals (root is window)
-        root.dropbox = factory();
+        root[root.__dropbox_export || 'dropbox'] = factory();
     }
 }(this, function () {
 
