@@ -29,6 +29,19 @@ The values for `apiFunction` and `apiArguments` are exactly as documented in the
 
 Returns a Promise if supported by the runtime environment, otherwise `undefined`. See **Promises** below.
 
+## Global Reference
+When including this script in the browser, by default it will attach itself to `window.dropbox`. To change this behavior, set `window.__dropbox_export` to the name you prefer it to export as.
+
+```
+<script>
+  window.__dropbox_export = 'dropbox_v2';
+</script>
+<script src="..../dropbox.js"></script>
+<script>
+  // this library will now be accessible via window.dropbox_v2
+</script>
+```
+
 ## Authentication
 ```
 dropbox.authenticate('client_id', handlers);
